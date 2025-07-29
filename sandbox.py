@@ -59,34 +59,40 @@ first_cycle = True
 letters = []
 remaining_cubies = CUBIES.copy()
 while remaining_cubies:
+    if first_cycle:
+        init_colors = BUFFER_COLORS
+    else:
+        init_colors: tuple[int, int] = random.choice(tuple(remaining_cubies)) # type: ignore # if plan mode, the user choose
+
+
     current_colors = init_colors
     init_colors_sorted = sorted(init_colors)
     #print(init_colors)
     first_of_cycle = True
-    is_end_cycle = False
-    while not is_end_cycle: # 1 cycle
-        letter,coord0,coord1 = EDGES_STICKERS_REV[current_colors]
-        colors2 = (
-            int(cube.state[current_colors[0]][coord0[0]][coord0[1]]),
-            int(cube.state[current_colors[1]][coord1[0]][coord1[1]])
-        )
-        print(colors2)
-        remaining_cubies.remove(colors2)
-        colors2_sorted = sorted(colors2)
-        is_end_cycle = sorted(colors2)==init_colors_sorted
-            
-        if not (is_end_cycle and first_cycle):
-            if True: # verif if it was already solved
-                print("NEW LETTER:")
+    last_of_cycle = False
+    cycle_letters = []
+    while not last_of_cycle: # 1 cycle
+        last_of_cycle = not first_of_cycle and sorted(current_colors) == init_colors_sorted
+        print(current_colors,last_of_cycle)
+        letter,pos0,pos1 = EDGES_STICKERS_REV[current_colors]
+        if not (first_cycle and (first_of_cycle or last_of_cycle)):
+            if letters and letters[-1]==letter: # solved piece
+                del letters[-1]
+            else:
                 letters.append(letter)
+                cycle_letters.append(letter)
+                if first_of_cycle:
+                    print("NEW CYCLE")
+                print(f"letter: {letter}")
+        if not first_of_cycle:
+            remaining_cubies.remove(current_colors)
 
-
-        current_colors = colors2
+        current_colors = (
+            int(cube.state[current_colors[0]][pos0[0]][pos0[1]]),
+            int(cube.state[current_colors[1]][pos1[0]][pos1[1]])
+        )
         first_of_cycle = False
-
-    init_colors: tuple[int, int] = random.choice(tuple(CUBIES)) # type: ignore # if plan mode, the user choose
-    print(init_colors)
-    print(remaining_cubies)
-    print(letters)
+    first_cycle = False
+    # Here user input test
     pass
 print(EDGES_STICKERS_REV[init_colors])
