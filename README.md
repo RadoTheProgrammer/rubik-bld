@@ -7,9 +7,15 @@ The problem with Rubik's cube blindfolded is that if you do a single error, you 
 
 But the worst thing is that you can't even know where you messed up, if it was during planification, memorisation or execution.
 
+Personally, I always make some stupid mistakes of inattention, and I think just practicing isn't good enough to fix that, the way you practice also matters too.
+
 I used to film myself solving, but it never really worked with me.
 
 With this project, you gets more aware of what you did right, and the mistake you made, it regularly check your step, to see if something is wrong.
+
+Also it allows to practice on specific steps, instead of all, if you struggle only on something.
+
+And as I always said, computer never makes errors, errors always come from humans.
 
 ## How it works
 
