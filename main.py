@@ -1,5 +1,3 @@
-import random
-
 
 M_PLAN = False
 M_MEMO = False
@@ -8,9 +6,15 @@ M_DO = True
 T_EDGES = False
 T_CORNERS = True
 
-MARK_CYCLE = False
-#ALGORITHM = "D2 L2 B2 D2 F2 D L2 U' B2 U' R2 L U2 B2 F U2 F D R' F' D"
 ALGORITHM = "U' B2 D L2 U L2 D B2 U F L D R2 B D' F2 R2 B F2"
+
+
+
+import random
+
+
+#ALGORITHM = "D2 L2 B2 D2 F2 D L2 U' B2 U' R2 L U2 B2 F U2 F D R' F' D"
+
 #ALGORITHM = "M2 U M2 U2 M2 U M2 U2"
 
 END_INPUT = "end"

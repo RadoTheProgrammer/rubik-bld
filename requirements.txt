@@ -1,1 +1,1 @@
-rubik_impl
+rubik_impl>=0.2
