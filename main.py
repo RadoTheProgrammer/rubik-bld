@@ -1,34 +1,20 @@
 import random
-"""
-This script simulates edge piece cycles for a Rubik's Cube using a sticker-letter mapping.
-It uses a solved cube state and iterates through edge cycles, tracking visited cubies and their corresponding letters.
-Variables:
-    init_colors (tuple[int, int]): The current buffer colors, representing the sticker colors of the edge being cycled.
-        This variable is always a tuple of two integers, which correspond to face indices/colors.
-        (Type annotation is provided to assist static analysis tools like VS Code Pylance.)
-Functions and Logic:
-    - EDGES_STICKERS: Dictionary mapping letters to edge sticker coordinates.
-    - EDGES_STICKERS_REV: Reverse mapping from sticker coordinates to letter and positions.
-    - CUBIES: Set of all unique edge cubies, represented as sorted tuples of face indices.
-    - The main loop cycles through all edge cubies, following the permutation cycles and recording the letter sequence.
-Note:
-    To avoid Pylance type errors, annotate `init_colors` as `tuple[int, int]`:
-        init_colors: tuple[int, int] = (0, 3)
-"""
+
 
 M_PLAN = False
-M_MEMO = True
+M_MEMO = False
 M_DO = True
 
-T_EDGES = True
+T_EDGES = False
 T_CORNERS = True
 
 MARK_CYCLE = False
 #ALGORITHM = "D2 L2 B2 D2 F2 D L2 U' B2 U' R2 L U2 B2 F U2 F D R' F' D"
-ALGORITHM = "M2 U M2 U2 M2 U M2"
+ALGORITHM = "U' B2 D L2 U L2 D B2 U F L D R2 B D' F2 R2 B F2"
+#ALGORITHM = "M2 U M2 U2 M2 U M2 U2"
 
-
-EDGES_STICKERS = {
+END_INPUT = "end"
+EDGES_STICKERSDATA = {
     "A":(0,4),
     "B":(0,3),
     "C":(0,2),
@@ -55,7 +41,7 @@ EDGES_STICKERS = {
     "X":(5,1)
 }
 
-EDGES_CUBIES = {
+EDGES_CUBIESDATA = {
     (0,4): ((0,1),(0,1)),
     (0,3): ((1,2),(0,1)),
     (0,2): ((2,1),(0,1)),
@@ -70,33 +56,44 @@ EDGES_CUBIES = {
     (4,5): ((2,1),(2,1))
 }
 
+
 CORNERS_STICKERS = {
-    "A":((0,0,0),(4,0,2),(1,0,0)),
-    "B":((0,0,2),(3,0,2),(4,0,0)),
-    "C":((0,2,2),(2,0,2),(3,0,0)),
-    "D":((0,2,0),(1,0,2),(2,0,0)),
-    "E":((1,0,0),(0,0,0),(4,0,2)),
-    "F":((1,0,2),(2,0,0),(0,2,0)),
-    "G":((1,2,2),(5,0,0),(2,2,0)),
-    "H":((1,2,0),(4,2,2),(5,2,0)),
-    "I":((2,0,0),(0,2,0),(1,0,2)),
-    "J":((2,0,2),(3,0,0),(0,2,2)),
-    "K":((2,2,2),(5,0,2),(3,2,0)),
-    "L":((2,2,0),(1,2,2),(5,0,0)),
-    "M":((3,0,0),(0,2,2),(2,0,2)),
-    "N":((3,0,2),(4,0,0),(0,0,2)),
-    "O":((3,2,2),(5,2,2),(4,2,0)),
-    "P":((3,2,0),(2,2,2),(5,0,2)),
-    "Q":((4,0,0),(0,0,2),(3,0,2)),
-    "R":((4,0,2),(1,0,0),(0,0,0)),
-    "S":((4,2,2),(5,2,0),(1,2,0)),
-    "T":((4,2,0),(3,2,2),(5,2,2)),
-    "U":((5,0,0),(2,2,0),(1,2,2)),
-    "V":((5,0,2),(3,2,0),(2,2,2)),
-    "W":((5,2,2),(4,2,0),(3,2,2)),
-    "X":((5,2,0),(1,2,0),(4,2,2))
+    "A":(0,4,1),
+    "B":(0,3,4),
+    "C":(0,2,3),
+    "D":(0,1,2),
+    "E":(1,0,4),
+    "F":(1,2,0),
+    "G":(1,5,2),
+    "H":(1,4,5),
+    "I":(2,0,1),
+    "J":(2,3,0),
+    "K":(2,5,3),
+    "L":(2,1,5),
+    "M":(3,0,2),
+    "N":(3,4,0),
+    "O":(3,5,4),
+    "P":(3,2,5),
+    "Q":(4,0,3),
+    "R":(4,1,0),
+    "S":(4,5,1),
+    "T":(4,3,5),
+    "U":(5,2,1),
+    "V":(5,3,2),
+    "W":(5,4,3),
+    "X":(5,1,4)
 }
 
+CORNERS_CUBIES = {
+    (0,1,4): ((0,0),(0,0),(0,2)),
+    (0,1,2): ((2,0),(0,2),(0,0)),
+    (0,2,3): ((2,2),(0,2),(0,0)),
+    (0,3,4): ((0,2),(0,2),(0,0)),
+    (1,2,5): ((2,2),(2,0),(0,0)),
+    (2,3,5): ((2,2),(2,0),(0,2)),
+    (3,4,5): ((2,2),(2,0),(2,2)),
+    (1,4,5): ((2,0),(2,2),(2,0))
+}
 
 def tsort(colors: tuple[int, ...]) -> tuple[int, ...]:
     """Sorts the input tuple and returns a tuple of the same length and type."""
@@ -109,17 +106,15 @@ import rubik_impl
 cube = rubik_impl.Cube.solved(rubik_impl.C_NUMBERS)
 cube.apply(ALGORITHM)
 print(cube)
+def input_letter():
+    return input("Letter?")
 
 def get_letters(buffer_colors,stickersdata,cubiesdata):
     """
     func_getlp: func to get letter and pos from colors
     func_getc: func to get colors from pos
     """
-    def input_letter(*possible_answers):
-        while True:
-            letter=input("Letter?")
-            if letter in all_letters+possible_answers:
-                return letter
+
             
     def get_posf(colors):
         """
@@ -131,8 +126,10 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
         return posf
     
     def get_at(colors,posf):
-        return tuple(int(cube.state[color][p[0]][p[1]]) for color,p in zip(colors,posf))
-
+        if colors ==(4,5,1):
+            pass
+        colors = tuple(int(cube.state[color][p[0]][p[1]]) for color,p in zip(colors,posf))
+        return colors
     def remove_solved_cubies():
         buffer_colors_sorted = tsort(buffer_colors)
         for colors in cubiesdata:
@@ -140,13 +137,18 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
             colors2 = get_at(colors,posf)
             if colors in (colors2,buffer_colors_sorted):
                 remaining_cubies.remove(colors)
-                print(colors)
+
+
     def input_init_colors():
         while True:
-            letter = input_letter(".")
+            letter = input_letter()
             if letter == ".": # Bro gave up, let's tell possible cubies
                 print("Possible letters: "+" ".join(("/".join(cubies_letters[colors]) for colors in remaining_cubies)))
                 continue
+            elif letter == END_INPUT:
+                print("It's not end")
+                continue
+
             init_colors = stickersdata[letter]
             init_colors_sorted = tsort(init_colors)
             if init_colors_sorted in remaining_cubies:
@@ -165,19 +167,20 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
             if M_PLAN: # ask for init letter
                 init_colors,init_colors_sorted = input_init_colors()
             else:
-                init_colors = init_colors_sorted = remaining_cubies.pop() # type: ignore # if plan mode, the user choose
+                init_colors_sorted = remaining_cubies.pop() # type: ignore # if plan mode, the user choose
+                init_colors = stickersdata[cubies_letters[init_colors_sorted][0]]
         return init_colors,init_colors_sorted
     
-    print(get_posf((4,1)))
+
     first_cycle = True
     letters = []
     stickersdata_rev = {value:key for key,value in stickersdata.items()}
     cubies_letters = {key:[] for key in cubiesdata}
-    print(cubies_letters)
+
     for letter,colors in stickersdata.items():
         cubies_letters[tsort(colors)].append(letter)
 
-    print(cubies_letters)
+
 
     all_letters = tuple(stickersdata)
     remaining_cubies = list(cubiesdata)
@@ -186,7 +189,7 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
 
     
             #print(f"Removed cubie: {colors}")
-    print(remaining_cubies)
+
     while remaining_cubies:
         init_colors,init_colors_sorted = get_init_colors()
 
@@ -197,45 +200,111 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
         last_of_cycle = False
         cycle_letters = []
         while not last_of_cycle: # 1 cycle
+            print(init_colors)
             last_of_cycle = not first_of_cycle and tsort(current_colors) == init_colors_sorted
             #print(colors2,last_of_cycle)
             posf = get_posf(current_colors)
             letter = stickersdata_rev[current_colors]
+            print(letter)
             #print(f"Letter: {letter}")
             if not (first_cycle and (first_of_cycle or last_of_cycle)):
-                if first_of_cycle and MARK_CYCLE:
-                    letter = letter.lower()
+                if first_of_cycle:
+                    letter = FirstOfCycle(letter)
                 letters.append(letter)
                 cycle_letters.append(letter)
+                print(letter)
 
                     #print(f"letter: {letter}")
             if not (first_of_cycle or last_of_cycle):
-                remaining_cubies.remove(current_colors)
+                remaining_cubies.remove(tsort(current_colors))
 
             current_colors = get_at(current_colors,posf)
             first_of_cycle = False
 
 
         if M_PLAN:
-            for letter in (cycle_letters if first_cycle else cycle_letters[1:]):
-                letter_input=input_letter()
-                if letter_input == letter:
-                    print("Correct")
-                else:
-                    print(f"Incorrect: {letter}")
+            quiz_letters(cycle_letters if first_cycle else cycle_letters[1:],False)
+
         first_cycle = False
         # Here user input test
         pass
+    if M_PLAN:
+        quiz_letters_end()
     return letters
 
-
+class FirstOfCycle(str):pass
 
 def getc_edges(colors,posf):
     return (
         int(cube.state[colors[0]][posf[0][0]][posf[0][1]]),
         int(cube.state[colors[1]][posf[1][0]][posf[1][1]])
     )
+def quiz_letters(letters,for_memo):
+    if for_memo:
+        print("Type edges letters you memorised")
+    for letter in letters:
+        letter_input = input_letter()
+        if letter==letter_input:
+            print("Correct")
+        else:
+            print(f"Incorrect: {letter}")
+        if for_memo and M_DO:
+            print("HELLO")
+            is_right = do_letter(letter)
+    if for_memo:
+        quiz_letters_end()
+def quiz_letters_end():
+    letter_input = input_letter()
+    if letter_input == END_INPUT:
+        print("Correct")
+    else:
+        print(f"Incorrect, it's finished, (you had to type {END_INPUT!r})")
 
+def do_letter(letter):
+    user_input = input(f"Do {letter}")
+    is_right = not user_input
+    if is_right:
+        print("Congrats")
+    elif isinstance(letter,FirstOfCycle):
+        print("It's normal it's failed, it's first of cycle")
+        is_right = True
+    else:
+        print("Oh crap")
+def test_do(letters):
+    for letter in letters:
+        do_letter(letter)
+
+def memorize(letters):
+    for letter in letters:
+        input(f"Memorize {letter}")
+        print("\n"*20)
 if T_EDGES:
-    print(get_letters((0,3),EDGES_STICKERS,EDGES_CUBIES))
+    edges_letters = get_letters((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA)
+
+if T_CORNERS:
+    corners_letters = get_letters((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES)
+
+if M_MEMO:
+    if not M_PLAN:
+        if T_EDGES:
+            print("Edges letters to memorise")
+            memorize(edges_letters)
+
+        if T_CORNERS:
+            print("Corners letters to memorise")
+            memorize(corners_letters)
+
+    if T_EDGES:
+        quiz_letters(edges_letters,True)
+
+    if T_CORNERS:
+        quiz_letters(corners_letters,True)
+
+elif M_DO:
+    if T_EDGES:
+        print("Edges letters")
+        test_do(edges_letters)
+
+    if T_CORNERS:
+        test_do(corners_letters)
 
