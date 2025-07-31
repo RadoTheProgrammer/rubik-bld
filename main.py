@@ -3,10 +3,10 @@ M_PLAN = False
 M_MEMO = False
 M_DO = True
 
-T_EDGES = False
+T_EDGES = True
 T_CORNERS = True
 
-ALGORITHM = "U' B2 D L2 U L2 D B2 U F L D R2 B D' F2 R2 B F2"
+ALGORITHM = "B D B2 R2 B2 D' R2 F2 U F2 D' B2 L' D2 F2 U' B F2 U' L B'"
 
 
 
@@ -204,19 +204,19 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
         last_of_cycle = False
         cycle_letters = []
         while not last_of_cycle: # 1 cycle
-            print(init_colors)
+            #print(init_colors)
             last_of_cycle = not first_of_cycle and tsort(current_colors) == init_colors_sorted
             #print(colors2,last_of_cycle)
             posf = get_posf(current_colors)
             letter = stickersdata_rev[current_colors]
-            print(letter)
+            #print(letter)
             #print(f"Letter: {letter}")
             if not (first_cycle and (first_of_cycle or last_of_cycle)):
                 if first_of_cycle:
                     letter = FirstOfCycle(letter)
                 letters.append(letter)
                 cycle_letters.append(letter)
-                print(letter)
+                #print(letter)
 
                     #print(f"letter: {letter}")
             if not (first_of_cycle or last_of_cycle):
@@ -284,7 +284,8 @@ def memorize(letters):
         print("\n"*20)
 if T_EDGES:
     edges_letters = get_letters((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA)
-
+    has_parity = len(edges_letters)%2
+    print(f"Has parity: {has_parity}")
 if T_CORNERS:
     corners_letters = get_letters((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES)
 
@@ -310,5 +311,6 @@ elif M_DO:
         test_do(edges_letters)
 
     if T_CORNERS:
+        print("Corners letters")
         test_do(corners_letters)
 
