@@ -1,27 +1,25 @@
 
-M_PLAN = True
-M_MEMO = True
+M_PLAN = False
+M_MEMO = False
 M_DO = True
 
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "B D B2 R2 B2 D' R2 F2 U F2 D' B2 L' D2 F2 U' B F2 U' L B'"
-
-
-#ALGORITHM = "D2 L2 B2 D2 F2 D L2 U' B2 U' R2 L U2 B2 F U2 F D R' F' D"
-
 SCRAMBLE = "M2 U M2 U2 M2 U M2"
 
-FILE_DF_SINGLE = "data-single.csv"
-FILE_ALL = "data-all.csv"
-#ALGORITHM = "R U R' U' R' F R2 U' R' U' R U R' F'"
+FILE_DATA_SINGLE = "data-single.csv"
+FILE_DATA_ALL = "data-all-test.csv"
 
+
+DISABLE_MEMO_END = False
 import random
 import pandas as pd
 import time
 import os
 
+
+RESET_DATA = False
 END_INPUT = "end"
 EDGES_STICKERSDATA = {
     "A":(0,4),
@@ -129,7 +127,7 @@ def get_tt_delta():
     new_tt = time.time()
     tt_delta = new_tt-tt
     tt = new_tt
-    return tt_delta
+    return round(tt_delta,3)
 
 def get_letters(buffer_colors,stickersdata,cubiesdata):
     """
@@ -184,7 +182,8 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
                 dfd["IsFoC"].append(True)
                 dfd["PlanMistake"].append(planMistake)
                 dfd["PlanTime"].append(get_tt_delta())
-                memorize_letter(letter_input)
+                if M_MEMO:
+                    memorize_letter(letter_input)
                 remaining_cubies.remove(init_colors_sorted)
                 return init_colors,init_colors_sorted
 
@@ -222,7 +221,8 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
                 print(f"Incorrect: {letter}")
             dfd["PlanMistake"].append(planMistake)
             dfd["PlanTime"].append(get_tt_delta())
-            memorize_letter(letter)
+            if M_MEMO:
+                memorize_letter(letter)
 
 
 
@@ -295,13 +295,18 @@ def getc_edges(colors,posf):
     )
 def memo_recall(letters):
     for letter in letters+[END_INPUT]:
-        letter_input = input_letter()
-        if letter==letter_input:
-            memoMistake = ""
-            print("Correct")
+        if letter == END_INPUT and DISABLE_MEMO_END:
+            memoMistake =""
+            memoRecallTime = 0
         else:
-            memoMistake = letter_input
-            print(f"Incorrect: {letter}")
+
+            letter_input = input_letter()
+            if letter==letter_input:
+                memoMistake = ""
+                print("Correct")
+            else:
+                memoMistake = letter_input
+                print(f"Incorrect: {letter}")
 
         dfd["MemoMistake"].append(memoMistake)
         dfd["MemoRecallTime"].append(get_tt_delta())
@@ -310,12 +315,6 @@ def memo_recall(letters):
             #print("HELLO")
             do_letter(letter)
 
-def quiz_letters_end():
-    letter_input = input_letter()
-    if letter_input == END_INPUT:
-        print("Correct")
-    else:
-        print(f"Incorrect, it's finished, (you had to type {END_INPUT!r})")
 
 def do_letter(letter):
     if letter==END_INPUT:
@@ -328,7 +327,7 @@ def do_letter(letter):
             print("Congrats")
         elif isinstance(letter,FirstOfCycle):
             print("It's normal it's failed, it's first of cycle")
-            is_right = True
+            user_input = ""
         else:
             print("Oh crap")
         doTime = get_tt_delta()
@@ -337,7 +336,7 @@ def do_letter(letter):
 
 
 def test_do(letters):
-    for letter in letters:
+    for letter in letters+[END_INPUT]:
         do_letter(letter)
 
 def memorize_letter(letter):
@@ -345,6 +344,7 @@ def memorize_letter(letter):
         dfd["MemoTime"].append(0)
     else:
         input(f"Memorize {letter}")
+        print("\n"*20)
         dfd["MemoTime"].append(get_tt_delta())
 
 def memorize(letters):
@@ -410,30 +410,32 @@ elif M_DO:
         print("Do corners letters")
         test_do(corners_letters)
 
-print(dfd)
+#print(dfd)
 df = pd.DataFrame(dfd)
-df.to_csv(FILE_DF_SINGLE,index=False)
+df.to_csv(FILE_DATA_SINGLE,index=False)
 print(df)
 
 def any(col):
     return int(df[col].any())
 
+def timeSum(col):
+    return round(df[col].sum(),3)
 planMistake = any("PlanMistake") if M_PLAN else ""
-planTime = df["PlanTime"].sum() if M_PLAN else ""
+planTime = timeSum("PlanTime") if M_PLAN else 0
 
 memoMistake = any("MemoMistake") if M_MEMO else ""
-memoTime = df["MemoTime"].sum() if M_MEMO else ""
-memoRecallTime = df["MemoRecallTime"].sum() if M_MEMO else ""
+memoTime = timeSum("MemoTime") if M_MEMO else 0
+memoRecallTime = timeSum("MemoRecallTime") if M_MEMO else 0
 
 doMistake = any("DoMistake") if M_DO else ""
-doTime = df["DoTime"].sum() if M_DO else ""
+doTime = timeSum("DoTime") if M_DO else 0
 
 totalTime = planTime + memoTime + memoRecallTime + doTime
 
-if not os.path.exists(FILE_ALL):
-    with open(FILE_ALL,"x") as f:
-        f.write("Datetime,Scramble,TotalTime,PlanMistake,PlanTime,MemoMistake,MemoTime,MemoRecallTime,DoMistake,DoTime\n")
+if not os.path.exists(FILE_DATA_ALL) or RESET_DATA:
+    with open(FILE_DATA_ALL,"w") as f:
+        f.write("Datetime,Scramble,TotalTime,PlanMistake,MemoMistake,DoMistake,PlanTime,MemoTime,MemoRecallTime,DoTime\n")
 
-with open(FILE_ALL,"a") as f:
-    f.write(f"{now},{SCRAMBLE},{totalTime},{planMistake},{planTime},{memoMistake},{memoTime},{memoRecallTime},{doMistake},{doTime}")
+with open(FILE_DATA_ALL,"a") as f:
+    f.write(f"{now},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime}\n")
 
