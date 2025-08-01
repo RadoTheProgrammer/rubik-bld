@@ -1,7 +1,7 @@
 
-M_PLAN = True
+M_PLAN = False
 M_MEMO = True
-M_DO = False
+M_DO = True
 
 T_EDGES = True
 T_CORNERS = False
@@ -12,7 +12,7 @@ ALGORITHM = "B D B2 R2 B2 D' R2 F2 U F2 D' B2 L' D2 F2 U' B F2 U' L B'"
 #ALGORITHM = "D2 L2 B2 D2 F2 D L2 U' B2 U' R2 L U2 B2 F U2 F D R' F' D"
 
 ALGORITHM = "M2 U M2 U2 M2 U M2"
-ALGORITHM = "R U R' U' R' F R2 U' R' U' R U R' F'"
+#ALGORITHM = "R U R' U' R' F R2 U' R' U' R U R' F'"
 
 import random
 import pandas as pd
@@ -116,7 +116,10 @@ cube = rubik_impl.Cube.solved(rubik_impl.C_NUMBERS)
 cube.apply(ALGORITHM)
 print(cube)
 def input_letter():
-    return input("Letter?")
+    letter=""
+    while not letter:
+        letter = input("Letter?")
+    return letter
 
 def get_tt_delta():
     global tt
@@ -125,7 +128,7 @@ def get_tt_delta():
     tt = new_tt
     return tt_delta
 
-def get_letters(buffer_colors,stickersdata,cubiesdata,EoC):
+def get_letters(buffer_colors,stickersdata,cubiesdata,dfd):
     """
     func_getlp: func to get letter and pos from colors
     func_getc: func to get colors from pos
@@ -156,7 +159,7 @@ def get_letters(buffer_colors,stickersdata,cubiesdata,EoC):
 
 
     def input_init_colors():
-        planMistake = None
+        planMistake = ""
         while True:
             letter_input = input_letter()
             if letter_input == ".": # Bro gave up, let's tell possible cubies
@@ -167,13 +170,20 @@ def get_letters(buffer_colors,stickersdata,cubiesdata,EoC):
                 planMistake = letter_input
                 print("It's not end")
                 continue
-
-            init_colors = stickersdata[letter_input]
+            try: # Check if it's a valid letter
+                init_colors = stickersdata[letter_input]
+            except:
+                continue
             init_colors_sorted = tsort(init_colors)
             if init_colors_sorted in remaining_cubies:
                 print("Well chosen")
+                dfd["Letter"].append(letter_input)
+                dfd["IsFoC"].append(True)
+                dfd["PlanMistake"].append(planMistake)
+                dfd["PlanTime"].append(get_tt_delta())
+                memorize_it()
                 remaining_cubies.remove(init_colors_sorted)
-                return init_colors,init_colors_sorted,planMistake
+                return init_colors,init_colors_sorted
 
             else:
                 planMistake = letter_input
@@ -183,35 +193,38 @@ def get_letters(buffer_colors,stickersdata,cubiesdata,EoC):
         if first_cycle:
             init_colors = buffer_colors
             init_colors_sorted = tsort(init_colors)
-            planMistake = None
+            
         else:
             if M_PLAN: # ask for init letter
-                init_colors,init_colors_sorted,planMistake = input_init_colors()
+                init_colors,init_colors_sorted = input_init_colors()
             else:
                 init_colors_sorted = remaining_cubies.pop() # type: ignore # if plan mode, the user choose
+                letter = cubies_letters[init_colors_sorted][0]
                 init_colors = stickersdata[cubies_letters[init_colors_sorted][0]]
-                planMistake = None
-        return init_colors,init_colors_sorted,planMistake
-    
-    def new_row(letter,isFoC,planMistake):
-        global tt
-        print(df.dtypes)
-        df.loc[len(df)] = {"Letter":letter,"EoC":EoC,"IsFoC":isFoC,"PlanMistake":planMistake,"PlanTime":get_tt_delta()} # type: ignore
-        print(df)
-        print(df.dtypes)
+                dfd["Letter"].append(letter)
+                dfd["IsFoC"].append(True)
+        return init_colors,init_colors_sorted
+
+    def memorize_it():
+        input("Memorize it")
+        dfd["MemoTime"].append(get_tt_delta())
 
     def test_letter(letter):
+        dfd["Letter"].append(letter)
+        dfd["IsFoC"].append(False)
         if M_PLAN:
             letter_input = input_letter()
             if letter==letter_input:
-                planMistake = None
+                planMistake = ""
                 print("Correct")
             else:
                 planMistake = letter_input
                 print(f"Incorrect: {letter}")
-        else:
-            planMistake = None
-        new_row(letter,False,planMistake)
+            dfd["PlanMistake"].append(planMistake)
+            dfd["PlanTime"].append(get_tt_delta())
+            memorize_it()
+
+
 
     first_cycle = True
     letters = []
@@ -232,7 +245,7 @@ def get_letters(buffer_colors,stickersdata,cubiesdata,EoC):
             #print(f"Removed cubie: {colors}")
 
     while remaining_cubies:
-        init_colors,init_colors_sorted,planMistake = get_init_colors()
+        init_colors,init_colors_sorted = get_init_colors()
 
         current_colors = init_colors
     
@@ -250,7 +263,7 @@ def get_letters(buffer_colors,stickersdata,cubiesdata,EoC):
             #print(f"Letter: {letter}")
             if not (first_cycle and (first_of_cycle or last_of_cycle)):
                 if first_of_cycle:
-                    new_row(letter,True,planMistake)
+                    letter = FirstOfCycle(letter)
                 else:
                     test_letter(letter)
 
@@ -280,24 +293,23 @@ def getc_edges(colors,posf):
         int(cube.state[colors[0]][posf[0][0]][posf[0][1]]),
         int(cube.state[colors[1]][posf[1][0]][posf[1][1]])
     )
-def memo_recall(df):
+def memo_recall(dfd):
 
     print("Type edges letters you memorised")
-    for i, row in df.iterrows():
-        letter = row["Letter"]
+    for letter in dfd["Letter"]:
         letter_input = input_letter()
         if letter==letter_input:
-            memoMistake = None
+            memoMistake = ""
             print("Correct")
         else:
             memoMistake = letter_input
             print(f"Incorrect: {letter}")
         if M_DO:
             print("HELLO")
-            do_row(i, row)
-        print(df.dtypes)
-        df.loc[i,"MemoMistake"] = memoMistake
-        df.loc[i,"MemoRecallTime"] = get_tt_delta()
+            do_letter(dfd,letter)
+
+        dfd["MemoMistake"].append(memoMistake)
+        dfd["MemoRecallTime"].append(get_tt_delta())
 
 def quiz_letters_end():
     letter_input = input_letter()
@@ -306,89 +318,79 @@ def quiz_letters_end():
     else:
         print(f"Incorrect, it's finished, (you had to type {END_INPUT!r})")
 
-def do_row(i,row):
-    letter = row["Letter"]
-    if letter==END_INPUT:
-        return
-    isFoC = row["IsFoC"]
+def do_letter(dfd,letter):
+
     user_input = input(f"Do {letter}")
-    is_right = not user_input
-    if is_right:
+
+    if not user_input:
         print("Congrats")
-    elif isFoC:
+    elif isinstance(letter,FirstOfCycle):
         print("It's normal it's failed, it's first of cycle")
         is_right = True
     else:
         print("Oh crap")
-    doMistake = user_input if not is_right else None
-    df.loc[i,"DoMistake"] = doMistake
-    df.loc[i,"DoTime"] = get_tt_delta()
-
-def test_do(df):
-    for i, row in df.iterrows():
-        do_row(i,row)
-
-def memorize(df):
-    for i,row in df.iterrows():
-        input(f"Memorize {row["Letter"]}")
-        df.loc[i,"MemoTime"] = get_tt_delta()
-        print("\n"*20)
-        print(row)
-        print(df)
+    dfd["DoMistake"].append(user_input)
+    dfd["DoTime"].append(get_tt_delta())
 
 
-dtypes = {
-    "Letter": "string",
-    "EoC": "int8",
-    "IsFoC": "bool"
-}
+def test_do(dfd):
+    for letter in dfd["Letter"]:
+        do_letter(dfd,letter)
+
+def memorize(dfd):
+    for letter in dfd["Letter"]:
+        input(f"Memorize {letter}")
+        dfd["MemoTime"].append(get_tt_delta())
+        print(dfd)
+
+columns = ["Letter","IsFoC"]
 if M_PLAN:
-    dtypes["PlanMistake"] = "string"
-    dtypes["PlanTime"] = "float64"
+    columns += ["PlanMistake","PlanTime"]
+
 
 if M_MEMO:
-    dtypes["MemoMistake"] = "string"
-    dtypes["MemoTime"] = "float64"
-    dtypes["MemoRecallTime"] = "float64"
+    columns += ["MemoMistake","MemoTime","MemoRecallTime"]
 
 if M_DO:
-    dtypes["DoMistake"] = "string"
-    dtypes["DoTime"] = "float64"
+    columns += ["DoMistake","DoTime"]
 
-df = pd.DataFrame({col: pd.Series(dtype=dt) for col, dt in dtypes.items()})
+
+dfd_edges = {column:[] for column in columns}
+dfd_corners = {column:[] for column in columns}
 
 tt = time.time()
 if T_EDGES:
-    edges_letters = get_letters((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA,EOC_EDGES)
-    has_parity = len(edges_letters)%2
+    letters = get_letters((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA,dfd_edges)
+    has_parity = len(letters)%2
     print(f"Has parity: {has_parity}")
-    df_edges = df[df["EoC"]==EOC_EDGES]
+    print(dfd_edges)
 if T_CORNERS:
-    corners_letters = get_letters((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES,EOC_CORNERS)
-    df_corners = df[df["EoC"]==EOC_CORNERS]
+    corners_letters = get_letters((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES,dfd_corners)
 
 if M_MEMO:
     if not M_PLAN:
         if T_EDGES:
             print("Edges letters to memorise")
-            memorize(df_edges)
+            memorize(dfd_edges)
 
         if T_CORNERS:
             print("Corners letters to memorise")
-            memorize(df_corners)
+            memorize(dfd_corners)
 
     if T_EDGES:
-        memo_recall(df_edges)
+        memo_recall(dfd_edges)
 
     if T_CORNERS:
-        memo_recall(df_corners)
+        memo_recall(dfd_corners)
 
 elif M_DO:
     if T_EDGES:
         print("Edges letters")
-        test_do(df_edges)
+        test_do(dfd_edges)
 
     if T_CORNERS:
         print("Corners letters")
-        test_do(df_corners)
+        test_do(dfd_corners)
+
+print(dfd_edges)
 
