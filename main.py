@@ -6,7 +6,7 @@ M_DO    = 0
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "B2 R' B2 L' D2 F D' R' B' D2 B2 L' B2 L' F2 L2 F2 U2 R2"
+SCRAMBLE = "B' D2 R' U2 B2 R2 U' R' B D F2 L2 U2 D F2 B2 D L2 D F2"
 
 FILE_DATA_SINGLE = "data-single.csv"
 
