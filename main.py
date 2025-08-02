@@ -1,15 +1,16 @@
 
-M_PLAN = False
-M_MEMO = False
-M_DO = True
+M_PLAN  = 1
+M_MEMO  = 0
+M_DO    = 0
 
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "M2 U M2 U2 M2 U M2"
+SCRAMBLE = "B2 R' B2 L' D2 F D' R' B' D2 B2 L' B2 L' F2 L2 F2 U2 R2"
 
 FILE_DATA_SINGLE = "data-single.csv"
-FILE_DATA_ALL = "data-all-test.csv"
+
+FILE_DATA_ALL = "data-all.csv"
 
 
 DISABLE_MEMO_END = False
@@ -353,6 +354,10 @@ def memorize(letters):
 
     dfd["MemoTime"].append(0) # for end time
 
+def do_parity():
+    if has_parity:
+        input("Do parity")
+
 columns = ["Letter","IsFoC"]
 if M_PLAN:
     columns += ["PlanMistake","PlanTime"]
@@ -376,7 +381,6 @@ if T_EDGES:
         print("Plan edges letters")
     edges_letters = get_letters((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA)
     has_parity = len(edges_letters)%2
-    print(f"Has parity: {has_parity}")
 
 if T_CORNERS:
     if M_PLAN:
@@ -397,6 +401,8 @@ if M_MEMO:
         print("Type edges letters you memorised")
         memo_recall(edges_letters)
 
+    if M_DO:
+        do_parity()
     if T_CORNERS:
         print("Type corner letters you memorised")
         memo_recall(corners_letters)
@@ -406,6 +412,7 @@ elif M_DO:
         print("Do edges letters")
         test_do(edges_letters)
 
+    do_parity()
     if T_CORNERS:
         print("Do corners letters")
         test_do(corners_letters)
@@ -430,7 +437,7 @@ memoRecallTime = timeSum("MemoRecallTime") if M_MEMO else 0
 doMistake = any("DoMistake") if M_DO else ""
 doTime = timeSum("DoTime") if M_DO else 0
 
-totalTime = planTime + memoTime + memoRecallTime + doTime
+totalTime = round(planTime + memoTime + memoRecallTime + doTime,3)
 
 if not os.path.exists(FILE_DATA_ALL) or RESET_DATA:
     with open(FILE_DATA_ALL,"w") as f:
