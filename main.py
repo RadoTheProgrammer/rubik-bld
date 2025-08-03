@@ -1,13 +1,13 @@
 
-M_PLAN  = 1
-M_MEMO  = 0
+M_PLAN  = 0
+M_MEMO  = 1
 M_DO    = 0
 
 T_EDGES = True
 T_CORNERS = True
 
 SCRAMBLE = "B' D2 R' U2 B2 R2 U' R' B D F2 L2 U2 D F2 B2 D L2 D F2"
-
+SCRAMBLE = "M2 U M2 U2 M2 U M2"
 FILE_DATA_SINGLE = "data-single.csv"
 
 FILE_DATA_ALL = "data-all.csv"
@@ -130,7 +130,7 @@ def get_tt_delta():
     tt = new_tt
     return round(tt_delta,3)
 
-def get_letters(buffer_colors,stickersdata,cubiesdata):
+def plan_memo(buffer_colors,stickersdata,cubiesdata):
     """
     func_getlp: func to get letter and pos from colors
     func_getc: func to get colors from pos
@@ -206,6 +206,8 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
                 init_colors = stickersdata[cubies_letters[init_colors_sorted][0]]
                 dfd["Letter"].append(letter)
                 dfd["IsFoC"].append(True)
+                if M_MEMO:
+                    memorize_letter(letter)
         return init_colors,init_colors_sorted
 
 
@@ -222,8 +224,8 @@ def get_letters(buffer_colors,stickersdata,cubiesdata):
                 print(f"Incorrect: {letter}")
             dfd["PlanMistake"].append(planMistake)
             dfd["PlanTime"].append(get_tt_delta())
-            if M_MEMO:
-                memorize_letter(letter)
+        if M_MEMO:
+            memorize_letter(letter)
 
 
 
@@ -336,7 +338,7 @@ def do_letter(letter):
     dfd["DoTime"].append(doTime)
 
 
-def test_do(letters):
+def do(letters):
     for letter in letters+[END_INPUT]:
         do_letter(letter)
 
@@ -347,12 +349,6 @@ def memorize_letter(letter):
         input(f"Memorize {letter}")
         print("\n"*20)
         dfd["MemoTime"].append(get_tt_delta())
-
-def memorize(letters):
-    for letter in letters:
-        memorize_letter(letter)
-
-    dfd["MemoTime"].append(0) # for end time
 
 def do_parity():
     if has_parity:
@@ -377,25 +373,15 @@ tt = time.time()
 now = pd.Timestamp.now()
 
 if T_EDGES:
-    if M_PLAN:
-        print("Plan edges letters")
-    edges_letters = get_letters((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA)
+    print("Edges letters")
+    edges_letters = plan_memo((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA)
     has_parity = len(edges_letters)%2
 
 if T_CORNERS:
-    if M_PLAN:
-        print("Plan corners letters")
-    corners_letters = get_letters((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES)
+    print("Corners letters")
+    corners_letters = plan_memo((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES)
 
 if M_MEMO:
-    if not M_PLAN:
-        if T_EDGES:
-            print("Edges letters to memorise")
-            memorize(edges_letters)
-
-        if T_CORNERS:
-            print("Corners letters to memorise")
-            memorize(corners_letters)
 
     if T_EDGES:
         print("Type edges letters you memorised")
@@ -410,14 +396,14 @@ if M_MEMO:
 elif M_DO:
     if T_EDGES:
         print("Do edges letters")
-        test_do(edges_letters)
+        do(edges_letters)
 
     do_parity()
     if T_CORNERS:
         print("Do corners letters")
-        test_do(corners_letters)
+        do(corners_letters)
 
-#print(dfd)
+print(dfd)
 df = pd.DataFrame(dfd)
 df.to_csv(FILE_DATA_SINGLE,index=False)
 print(df)
