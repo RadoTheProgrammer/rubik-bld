@@ -6,8 +6,8 @@ M_DO    = 0
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "B' D2 R' U2 B2 R2 U' R' B D F2 L2 U2 D F2 B2 D L2 D F2"
-SCRAMBLE = "M2 U M2 U2 M2 U M2"
+SCRAMBLE = "R D2 L2 R2 B2 D L2 B2 U L2 D' U2 L' F U' F' R2 B F D'"
+#SCRAMBLE = "M2 U M2 U2 M2 U M2"
 FILE_DATA_SINGLE = "data-single.csv"
 
 FILE_DATA_ALL = "data-all.csv"
@@ -21,7 +21,9 @@ import os
 
 
 RESET_DATA = False
-END_INPUT = "end"
+END_LETTER = "end"
+PARITY_LETTER = "parity"
+
 EDGES_STICKERSDATA = {
     "A":(0,4),
     "B":(0,3),
@@ -130,7 +132,7 @@ def get_tt_delta():
     tt = new_tt
     return round(tt_delta,3)
 
-def plan_memo(buffer_colors,stickersdata,cubiesdata):
+def plan_memo(buffer_colors,stickersdata,cubiesdata,possible_parity):
     """
     func_getlp: func to get letter and pos from colors
     func_getc: func to get colors from pos
@@ -168,7 +170,7 @@ def plan_memo(buffer_colors,stickersdata,cubiesdata):
                 planMistake = letter_input
                 print("Possible letters: "+" ".join(("/".join(cubies_letters[colors]) for colors in remaining_cubies)))
                 continue
-            elif letter_input == END_INPUT:
+            elif letter_input == END_LETTER:
                 planMistake = letter_input
                 print("It's not end")
                 continue
@@ -215,15 +217,21 @@ def plan_memo(buffer_colors,stickersdata,cubiesdata):
         dfd["Letter"].append(letter)
         dfd["IsFoC"].append(False)
         if M_PLAN:
-            letter_input = input_letter()
-            if letter==letter_input:
+            if letter==PARITY_LETTER:
                 planMistake = ""
-                print("Correct")
+                planTime = 0
             else:
-                planMistake = letter_input
-                print(f"Incorrect: {letter}")
+                letter_input = input_letter()
+                if letter==letter_input:
+                    planMistake = ""
+                    print("Correct")
+                else:
+                    planMistake = letter_input
+                    print(f"Incorrect: {letter}")
+                planTime = get_tt_delta()
+
             dfd["PlanMistake"].append(planMistake)
-            dfd["PlanTime"].append(get_tt_delta())
+            dfd["PlanTime"].append(planTime)
         if M_MEMO:
             memorize_letter(letter)
 
@@ -286,7 +294,9 @@ def plan_memo(buffer_colors,stickersdata,cubiesdata):
         first_cycle = False
         # Here user input test
         pass
-    test_letter(END_INPUT)
+    test_letter(END_LETTER)
+    if possible_parity and len(letters)%2:
+        test_letter(PARITY_LETTER)
     return letters
 
 class FirstOfCycle(str):pass
@@ -296,23 +306,24 @@ def getc_edges(colors,posf):
         int(cube.state[colors[0]][posf[0][0]][posf[0][1]]),
         int(cube.state[colors[1]][posf[1][0]][posf[1][1]])
     )
-def memo_recall(letters):
-    for letter in letters+[END_INPUT]:
-        if letter == END_INPUT and DISABLE_MEMO_END:
-            memoMistake =""
-            memoRecallTime = 0
-        else:
-
-            letter_input = input_letter()
-            if letter==letter_input:
-                memoMistake = ""
-                print("Correct")
+def memorecall_do():
+    for letter in dfd["Letter"]:
+        if M_MEMO:
+            if letter == END_LETTER and DISABLE_MEMO_END:
+                memoMistake =""
+                memoRecallTime = 0
             else:
-                memoMistake = letter_input
-                print(f"Incorrect: {letter}")
 
-        dfd["MemoMistake"].append(memoMistake)
-        dfd["MemoRecallTime"].append(get_tt_delta())
+                letter_input = input_letter()
+                if letter==letter_input:
+                    memoMistake = ""
+                    print("Correct")
+                else:
+                    memoMistake = letter_input
+                    print(f"Incorrect: {letter}")
+
+            dfd["MemoMistake"].append(memoMistake)
+            dfd["MemoRecallTime"].append(get_tt_delta())
 
         if M_DO:
             #print("HELLO")
@@ -320,9 +331,10 @@ def memo_recall(letters):
 
 
 def do_letter(letter):
-    if letter==END_INPUT:
+    if letter==END_LETTER:
         user_input=""
         doTime = 0
+        print("\n"*10)
     else:
         user_input = input(f"Do {letter}")
 
@@ -338,12 +350,12 @@ def do_letter(letter):
     dfd["DoTime"].append(doTime)
 
 
-def do(letters):
-    for letter in letters+[END_INPUT]:
+def do():
+    for letter in dfd["Letter"]:
         do_letter(letter)
 
 def memorize_letter(letter):
-    if letter==END_INPUT:
+    if letter in (END_LETTER,PARITY_LETTER):
         dfd["MemoTime"].append(0)
     else:
         input(f"Memorize {letter}")
@@ -374,34 +386,17 @@ now = pd.Timestamp.now()
 
 if T_EDGES:
     print("Edges letters")
-    edges_letters = plan_memo((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA)
+    edges_letters = plan_memo((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA,1)
     has_parity = len(edges_letters)%2
-
+    print(f"Has parity: {has_parity}")
 if T_CORNERS:
     print("Corners letters")
-    corners_letters = plan_memo((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES)
+    corners_letters = plan_memo((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES,0)
 
-if M_MEMO:
 
-    if T_EDGES:
-        print("Type edges letters you memorised")
-        memo_recall(edges_letters)
+memorecall_do()
 
-    if M_DO:
-        do_parity()
-    if T_CORNERS:
-        print("Type corner letters you memorised")
-        memo_recall(corners_letters)
 
-elif M_DO:
-    if T_EDGES:
-        print("Do edges letters")
-        do(edges_letters)
-
-    do_parity()
-    if T_CORNERS:
-        print("Do corners letters")
-        do(corners_letters)
 
 print(dfd)
 df = pd.DataFrame(dfd)
