@@ -387,8 +387,7 @@ now = pd.Timestamp.now()
 if T_EDGES:
     print("Edges letters")
     edges_letters = plan_memo((0,3),EDGES_STICKERSDATA,EDGES_CUBIESDATA,1)
-    has_parity = len(edges_letters)%2
-    print(f"Has parity: {has_parity}")
+
 if T_CORNERS:
     print("Corners letters")
     corners_letters = plan_memo((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES,0)
