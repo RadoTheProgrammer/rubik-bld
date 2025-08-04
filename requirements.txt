@@ -1,1 +1,2 @@
 rubik_impl>=0.2
+pandas
