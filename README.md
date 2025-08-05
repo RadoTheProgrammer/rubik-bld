@@ -61,6 +61,8 @@ You get a quick look on each letter, and then it asks you to recall the letters.
 
 And again, like for M_PLAN, it checks at the end if you noticed you're at the end, type `end`, toggle `DISABLE_MEMO_END` if it annoys you.
 
+Also you have to type `parity` when there's a parity, between edges and corners, after edges's end.
+
 ### M_DO
 This mode is to train the execution.
 

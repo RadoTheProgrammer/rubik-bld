@@ -1,13 +1,13 @@
 
-M_PLAN  = 0
-M_MEMO  = 1
+M_PLAN  = 1
+M_MEMO  = 0
 M_DO    = 0
 
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "R D2 L2 R2 B2 D L2 B2 U L2 D' U2 L' F U' F' R2 B F D'"
-#SCRAMBLE = "M2 U M2 U2 M2 U M2"
+SCRAMBLE = "U L2 B2 L2 F2 D B2 D2 F2 R2 U2 L' B' R B' F L' F' L2"
+SCRAMBLE = "M2 U M2 U2 M2 U M2"
 FILE_DATA_SINGLE = "data-single.csv"
 
 FILE_DATA_ALL = "data-all.csv"
@@ -21,8 +21,8 @@ import os
 
 
 RESET_DATA = False
-END_LETTER = "end"
-PARITY_LETTER = "parity"
+END_LETTER = "END"
+PARITY_LETTER = "PARITY"
 
 EDGES_STICKERSDATA = {
     "A":(0,4),
@@ -123,7 +123,7 @@ def input_letter():
     letter=""
     while not letter:
         letter = input("Letter?")
-    return letter
+    return letter.upper()
 
 def get_tt_delta():
     global tt
@@ -273,9 +273,7 @@ def plan_memo(buffer_colors,stickersdata,cubiesdata,possible_parity):
             #print(letter)
             #print(f"Letter: {letter}")
             if not (first_cycle and (first_of_cycle or last_of_cycle)):
-                if first_of_cycle:
-                    letter = FirstOfCycle(letter)
-                else:
+                if not first_of_cycle:
                     test_letter(letter)
 
                 letters.append(letter)
@@ -307,7 +305,7 @@ def getc_edges(colors,posf):
         int(cube.state[colors[1]][posf[1][0]][posf[1][1]])
     )
 def memorecall_do():
-    for letter in dfd["Letter"]:
+    for letter,isFoC in zip(dfd["Letter"],dfd["IsFoC"]):
         if M_MEMO:
             if letter == END_LETTER and DISABLE_MEMO_END:
                 memoMistake =""
@@ -327,10 +325,10 @@ def memorecall_do():
 
         if M_DO:
             #print("HELLO")
-            do_letter(letter)
+            do_letter(letter,isFoC)
 
 
-def do_letter(letter):
+def do_letter(letter,isFoC):
     if letter==END_LETTER:
         user_input=""
         doTime = 0
@@ -340,7 +338,7 @@ def do_letter(letter):
 
         if not user_input:
             print("Congrats")
-        elif isinstance(letter,FirstOfCycle):
+        elif isFoC:
             print("It's normal it's failed, it's first of cycle")
             user_input = ""
         else:
@@ -362,9 +360,6 @@ def memorize_letter(letter):
         print("\n"*20)
         dfd["MemoTime"].append(get_tt_delta())
 
-def do_parity():
-    if has_parity:
-        input("Do parity")
 
 columns = ["Letter","IsFoC"]
 if M_PLAN:
@@ -397,7 +392,6 @@ memorecall_do()
 
 
 
-print(dfd)
 df = pd.DataFrame(dfd)
 df.to_csv(FILE_DATA_SINGLE,index=False)
 print(df)
