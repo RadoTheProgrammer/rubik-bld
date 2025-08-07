@@ -7,10 +7,10 @@ T_EDGES = True
 T_CORNERS = True
 
 SCRAMBLE = "F2 D2 B2 U B2 L2 D' R2 D R2 U2 F' R' D' L B' D2 L2 D' R' B'"
-#SCRAMBLE = "M2 U M2 U2 M2 U M2"
-FILE_DATA_SINGLE = "data-single.csv"
+SCRAMBLE = "M2 U M2 U2 M2 U M2"
+DIR_RECONSTRUCTIONS = "my-reconstructions"
 
-FILE_DATA_ALL = "data-all-test.csv"
+FILE_DATA_ALL = "my-data.csv"
 
 
 DISABLE_MEMO_END = False
@@ -402,7 +402,11 @@ memorecall_do()
 
 
 df = pd.DataFrame(dfd)
-df.to_csv(FILE_DATA_SINGLE,index=False)
+# save reconstruction
+if not os.path.exists(DIR_RECONSTRUCTIONS):
+    os.mkdir(DIR_RECONSTRUCTIONS)
+file_reconstruction = os.path.join(DIR_RECONSTRUCTIONS,f"{now}.csv")
+df.to_csv(file_reconstruction,index=False)
 print(df)
 
 def any(col):
