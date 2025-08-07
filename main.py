@@ -1,7 +1,7 @@
 
-M_PLAN  = 1
-M_MEMO  = 1
-M_DO    = 1
+M_PLAN  = 0
+M_MEMO  = 0
+M_DO    = 0
 
 T_EDGES = True
 T_CORNERS = True
@@ -10,7 +10,7 @@ SCRAMBLE = "F2 D2 B2 U B2 L2 D' R2 D R2 U2 F' R' D' L B' D2 L2 D' R' B'"
 #SCRAMBLE = "M2 U M2 U2 M2 U M2"
 FILE_DATA_SINGLE = "data-single.csv"
 
-FILE_DATA_ALL = "data-all.csv"
+FILE_DATA_ALL = "data-all-test.csv"
 
 
 DISABLE_MEMO_END = False
@@ -293,9 +293,18 @@ def plan_memo(buffer_colors,stickersdata,cubiesdata,possible_parity):
         # Here user input test
         pass
     test_letter(END_LETTER)
-    if possible_parity and len(letters)%2:
+    group_letters = []
+    has_parity = False
+    for letter in letters:
+        if has_parity:
+            group_letters[-1] += letter
+        else:
+            group_letters.append(letter)
+        has_parity = not has_parity
+
+    if possible_parity and has_parity:
         test_letter(PARITY_LETTER)
-    return letters
+    return " ".join(group_letters)
 
 class FirstOfCycle(str):pass
 
@@ -415,8 +424,8 @@ totalTime = round(planTime + memoTime + memoRecallTime + doTime,3)
 
 if not os.path.exists(FILE_DATA_ALL) or RESET_DATA:
     with open(FILE_DATA_ALL,"w") as f:
-        f.write("Datetime,Scramble,TotalTime,PlanMistake,MemoMistake,DoMistake,PlanTime,MemoTime,MemoRecallTime,DoTime\n")
+        f.write("Datetime,Scramble,TotalTime,PlanMistake,MemoMistake,DoMistake,PlanTime,MemoTime,MemoRecallTime,DoTime,EdgesLetters,CornersLetters,Comment\n")
 
 with open(FILE_DATA_ALL,"a") as f:
-    f.write(f"{now},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime}\n")
+    f.write(f"{now},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime},{edges_letters},{corners_letters},\n")
 
