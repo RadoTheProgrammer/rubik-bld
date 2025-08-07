@@ -1,13 +1,13 @@
 
 M_PLAN  = 1
-M_MEMO  = 0
-M_DO    = 0
+M_MEMO  = 1
+M_DO    = 1
 
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "U L2 B2 L2 F2 D B2 D2 F2 R2 U2 L' B' R B' F L' F' L2"
-SCRAMBLE = "M2 U M2 U2 M2 U M2"
+SCRAMBLE = "F2 D2 B2 U B2 L2 D' R2 D R2 U2 F' R' D' L B' D2 L2 D' R' B'"
+#SCRAMBLE = "M2 U M2 U2 M2 U M2"
 FILE_DATA_SINGLE = "data-single.csv"
 
 FILE_DATA_ALL = "data-all.csv"
