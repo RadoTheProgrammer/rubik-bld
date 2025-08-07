@@ -43,7 +43,7 @@ And then, open the file `main.py`, you can edit the parameters at the very first
 
 Toggle `T_EDGES` and `T_CORNERS` to choose if you want to train for edges or corners, they are both True by defaults.
 
-There's also `FILE_DATA_SINGLE` and `FILE_DATA_ALL`, those are the files where your training data are exported, feel free to change them, by default it points to my data
+There's also `DIR_RECONSTRUCTIONS` and `FILE_DATA_ALL`, those are the files where your training data are exported, feel free to change them, by default it points to my data
 
 ### M_PLAN
 This mode is to train the planification.
@@ -63,15 +63,18 @@ And again, like for M_PLAN, it checks at the end if you noticed you're at the en
 
 Also you have to type `parity` when there's a parity, between edges and corners, after edges's end.
 
+If you want it to to print the letters before memo recall, you have to put `M_MEMO = 2`, this is like a easy level for memorization
+
 ### M_DO
 This mode is to train the execution.
 
 You just apply the algorithm of the letter it tells you to apply. And you verify if the corresponding cubie is solved, if it is, leave it blank and tape enter, if it's not, write something (anything) so you know
 
+
 ## Data export
 
-All data of training sessions are stored in csv files `FILE_DATA_SINGLE` and `FILE_DATA_ALL`
+All data of training sessions are stored in csv files `DIR_RECONSTRUCTIONS` and `FILE_DATA_ALL`
 
-`FILE_DF_SINGLE` contain the data related to the last solve/training, including letters, mistakes, and times for the 3 steps (plan, memo, do). At the end of the solve, it prints those statistics (FYI IsFoC means Is first of cycle)
+`DIR_RECONSTRUCTIONS` contain the directory of all data solves reconstructions, including letters, mistakes, and times for the 3 steps (plan, memo, do). At the end of the solve, it prints those statistics (FYI IsFoC means Is first of cycle)
 
-`FILE_DATA_ALL` contain the data of all solves, with datetime, scramble, times, and mistakes.
+`FILE_DATA_ALL` contain the data of all solves, with letters, datetime, scramble, times, and mistakes.

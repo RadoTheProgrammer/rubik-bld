@@ -1,19 +1,23 @@
 
-M_PLAN  = 0
-M_MEMO  = 0
-M_DO    = 0
+M_PLAN  = 1
+M_MEMO  = 1
+M_DO    = 1
 
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "F2 D2 B2 U B2 L2 D' R2 D R2 U2 F' R' D' L B' D2 L2 D' R' B'"
+SCRAMBLE = "U B' R U2 R2 D' B2 L2 U' L2 R2 U F2 D2 R' F D2 B L2 R' B'"
 SCRAMBLE = "M2 U M2 U2 M2 U M2"
+PRINT_LETTERS = True
+
 DIR_RECONSTRUCTIONS = "my-reconstructions"
 
 FILE_DATA_ALL = "my-data.csv"
 
-
 DISABLE_MEMO_END = False
+
+
+
 import random
 import pandas as pd
 import time
@@ -396,7 +400,15 @@ if T_CORNERS:
     print("Corners letters")
     corners_letters = plan_memo((1,0,4),CORNERS_STICKERS,CORNERS_CUBIES,0)
 
-
+if M_MEMO==2:
+    if T_EDGES:
+        print(f"Edges letters: {edges_letters}")
+    
+    if T_CORNERS:
+        print(f"Corners letters: {corners_letters}")
+    input()
+    print("\n"*20)
+    
 memorecall_do()
 
 
