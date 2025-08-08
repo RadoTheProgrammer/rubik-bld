@@ -6,8 +6,8 @@ M_DO    = 1
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "L U R L' F' R' U2 L F L F2 D2 B2 U2 D2 R F2 L2 D2 R' B2"
-#SCRAMBLE = "M2 U M2 U2 M2 U M2"
+SCRAMBLE = "L2 F' D2 R' L' U' B' F2 U2 R L U2 D2 L D2 B2 R' F2 D2 U B'"
+SCRAMBLE = "M2 U M2 U2 M2 U M2"
 PRINT_LETTERS = True
 
 DIR_RECONSTRUCTIONS = "my-reconstructions"
@@ -368,10 +368,12 @@ def do():
 def memorize_letter(letter):
     if letter in (END_LETTER,PARITY_LETTER):
         dfd["MemoTime"].append(0)
+        dfd["MemoHint"].append("")
     else:
-        input(f"Memorize {letter}")
+        memoHint = input(f"Memorize {letter}")
         print("\n"*20)
         dfd["MemoTime"].append(get_tt_delta())
+        dfd["MemoHint"].append(memoHint)
 
 
 columns = ["Letter","IsFoC"]
@@ -380,7 +382,7 @@ if M_PLAN:
 
 
 if M_MEMO:
-    columns += ["MemoMistake","MemoTime","MemoRecallTime"]
+    columns += ["MemoMistake","MemoTime","MemoRecallTime","MemoHint"]
 
 if M_DO:
     columns += ["DoMistake","DoTime"]

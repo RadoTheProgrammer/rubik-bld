@@ -57,7 +57,7 @@ When you finished the letters, it's normal if it asks you again, it's to check i
 ### M_MEMO
 This mode is to train the memorization.
 
-You get a quick look on each letter, and then it asks you to recall the letters.
+You get a quick look on each letter, you can write something as a hint during memorization (it will be saved in data), and then it asks you to recall the letters.
 
 And again, like for M_PLAN, it checks at the end if you noticed you're at the end, type `end`, toggle `DISABLE_MEMO_END` if it annoys you.
 
