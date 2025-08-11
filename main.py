@@ -6,7 +6,7 @@ M_DO    = 1
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "B' D2 L F2 B R' D' B' U B2 L2 U F2 R2 U L2 F2 U F2 D'"
+SCRAMBLE = "U' F U' B2 R' L' B' U B2 L U2 B2 D2 F2 R2 B2 R' L' U'"
 #SCRAMBLE = "M2 U M2 U2 M2 U M2"
 PRINT_LETTERS = True
 
@@ -360,11 +360,6 @@ def do_letter(letter,isFoC):
     dfd["DoMistake"].append(user_input)
     dfd["DoTime"].append(doTime)
 
-
-def do():
-    for letter in dfd["Letter"]:
-        do_letter(letter)
-
 def memorize_letter(letter):
     if letter in (END_LETTER,PARITY_LETTER):
         dfd["MemoTime"].append(0)
@@ -392,7 +387,8 @@ dfd = {column:[] for column in columns}
 
 
 tt = time.time()
-now = pd.Timestamp.now()
+
+ts = pd.Timestamp.now().replace(microsecond=0)
 
 if T_EDGES:
     print("Edges letters")
@@ -421,7 +417,8 @@ df = pd.DataFrame(dfd)
 # save reconstruction
 if not os.path.exists(DIR_RECONSTRUCTIONS):
     os.mkdir(DIR_RECONSTRUCTIONS)
-file_reconstruction = os.path.join(DIR_RECONSTRUCTIONS,f"{now}.csv")
+
+file_reconstruction = os.path.join(DIR_RECONSTRUCTIONS,f"{ts.strftime("%Y-%m-%d_%H-%M-%S")}.csv")
 df.to_csv(file_reconstruction,index=False)
 print(df)
 
@@ -447,5 +444,5 @@ if not os.path.exists(FILE_DATA_ALL) or RESET_DATA:
         f.write("Datetime,Scramble,TotalTime,PlanMistake,MemoMistake,DoMistake,PlanTime,MemoTime,MemoRecallTime,DoTime,MemoEndTime,EdgesLetters,CornersLetters,Comment\n")
 
 with open(FILE_DATA_ALL,"a") as f:
-    f.write(f"{now},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime},{memoEndTime},{edges_letters},{corners_letters},\n")
+    f.write(f"{ts},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime},{memoEndTime},{edges_letters},{corners_letters},\n")
 
