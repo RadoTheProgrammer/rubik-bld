@@ -1,7 +1,0 @@
-Letter,IsFoC,PlanMistake,PlanTime,MemoMistake,MemoTime,MemoRecallTime,DoMistake,DoTime
-D,False,,1.8,,0.518,1.897,,0.623
-C,True,,0.546,,0.231,0.657,,0.431
-A,False,,0.481,,0.183,0.514,,0.19
-C,False,,0.496,,0.216,0.44,,0.183
-END,False,,1.664,,0.0,1.409,,0.0
-END,False,,0.616,,0.0,0.695,,0.0
