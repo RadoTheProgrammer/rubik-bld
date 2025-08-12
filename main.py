@@ -1,13 +1,13 @@
 
-M_PLAN  = 1
-M_MEMO  = 2
-M_DO    = 1
+M_PLAN  = 0
+M_MEMO  = 0
+M_DO    = 0
 
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "R' D' L' D B2 R2 B2 U' B2 U2 B2 D F2 B' U' R' D' F R' U"
-#SCRAMBLE = "M2 U M2 U2 M2 U M2"
+SCRAMBLE = "B2 L2 U B2 L' D R' F U2 F2 R2 L2 D2 B U2 B' R2 B' R'"
+SCRAMBLE = "M2 U M2 U2 M2 U M2"
 PRINT_LETTERS = True
 
 DIR_RECONSTRUCTIONS = "my-reconstructions"
@@ -408,7 +408,7 @@ if M_MEMO==2:
     memoEndTime = get_tt_delta()
     print("\n"*20)
 else:
-    memoEndTime = ""
+    memoEndTime = 0
 memorecall_do()
 
 
@@ -437,12 +437,15 @@ memoRecallTime = timeSum("MemoRecallTime") if M_MEMO else 0
 doMistake = any("DoMistake") if M_DO else ""
 doTime = timeSum("DoTime") if M_DO else 0
 
-totalTime = round(planTime + memoTime + memoRecallTime + doTime,3)
+totalTime = round(planTime + memoTime + memoRecallTime + doTime + memoEndTime,3)
 
 if not os.path.exists(FILE_DATA_ALL) or RESET_DATA:
     with open(FILE_DATA_ALL,"w") as f:
-        f.write("Datetime,Scramble,TotalTime,PlanMistake,MemoMistake,DoMistake,PlanTime,MemoTime,MemoRecallTime,DoTime,MemoEndTime,EdgesLetters,CornersLetters,Comment\n")
+        f.write("Datetime,Scramble,TotalTime,PlanMistake,MemoMistake,DoMistake,PlanTime,MemoTime,MemoRecallTime,DoTime,MemoEndTime,EdgesLetters,CornersLetters,Comment")
 
 with open(FILE_DATA_ALL,"a") as f:
-    f.write(f"{ts},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime},{memoEndTime},{edges_letters},{corners_letters},\n")
+    f.write(f"\n{ts},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime},{memoEndTime},{edges_letters},{corners_letters}")
 
+comment = input("Comment/Story ?")
+with open(FILE_DATA_ALL,"a") as f:
+    f.write(f",{comment}")
