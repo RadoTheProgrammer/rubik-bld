@@ -1,18 +1,13 @@
+MISTAKE_NAME = "MemoMistake"
+import rrstats
+
 import pandas as pd
 from pandas import Timestamp
 now = pd.Timestamp.now()
-print(repr(now))
-df = pd.read_csv("data-all.csv")
-dfd = {col:[] for col in ("Number","Avg","Avg5")}
-indexes = ["PlanMistake","MemoMistake","DoMistake"]
-for index in indexes:
-    series = df[index].dropna()
-    dfd["Number"].append(len(series))
-    dfd["Avg"].append(series.mean())
-    series5 = series.iloc[-5:]
-    #print(series5)
-    dfd["Avg5"].append(series5.mean())
 
-df_output = pd.DataFrame(dfd)
-print(df_output)
-
+df = pd.read_csv("my-data.csv")
+df = df.loc[df[MISTAKE_NAME].notna()][["Datetime",MISTAKE_NAME]]
+print(df)
+print(f"Mean: {df[MISTAKE_NAME].mean()}")
+print(f"Mean of 5: {df[MISTAKE_NAME][-5:].mean()}")
+#print(rrstats.StatsSeries(df["PlanMistake"]).myrolling(5).mean())
