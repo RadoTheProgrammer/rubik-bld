@@ -6,8 +6,8 @@ M_DO    = 0
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "B2 L2 U B2 L' D R' F U2 F2 R2 L2 D2 B U2 B' R2 B' R'"
-SCRAMBLE = "M2 U M2 U2 M2 U M2"
+SCRAMBLE = "B2 F2 D2 R2 D' F2 D L2 R2 B2 R2 B' R' D2 L' D U R' U' F' D2"
+#SCRAMBLE = "M2 U M2 U2 M2 U M2"
 PRINT_LETTERS = True
 
 DIR_RECONSTRUCTIONS = "my-reconstructions"
@@ -22,7 +22,8 @@ import random
 import pandas as pd
 import time
 import os
-
+import io
+import csv
 
 RESET_DATA = False
 END_LETTER = "END"
@@ -123,6 +124,14 @@ import rubik_impl
 cube = rubik_impl.Cube.solved(rubik_impl.C_NUMBERS)
 cube.apply(SCRAMBLE)
 print(cube)
+
+def string_to_csv(s):
+    output = io.StringIO()
+    writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+    writer.writerow([s])
+    escaped = output.getvalue().strip()  # strip trailing newline
+    return escaped
+
 def input_letter():
     letter=""
     while not letter:
@@ -447,5 +456,5 @@ with open(FILE_DATA_ALL,"a") as f:
     f.write(f"\n{ts},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime},{memoEndTime},{edges_letters},{corners_letters}")
 
 comment = input("Comment/Story ?")
-with open(FILE_DATA_ALL,"a") as f:
-    f.write(f",{comment}")
+with open(FILE_DATA_ALL,"a",encoding="utf8") as f:
+    f.write(f",{string_to_csv(comment)}")
