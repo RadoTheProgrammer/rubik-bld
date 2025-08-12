@@ -6,7 +6,7 @@ M_DO    = 0
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "D' B' D2 F U2 F D2 U2 F D2 B' R2 U' L B U2 R' U' F' L2 B"
+SCRAMBLE = "U' D R U' R' B D L' U F2 L F2 R' B2 L B2 L2 F2 U2 L"
 #SCRAMBLE = "M2 U M2 U2 M2 U M2"
 PRINT_LETTERS = True
 
