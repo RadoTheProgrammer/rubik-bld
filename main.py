@@ -1,12 +1,12 @@
 
 M_PLAN  = 0
-M_MEMO  = 0
+M_MEMO  = 1
 M_DO    = 0
 
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "B2 F2 D2 R2 D' F2 D L2 R2 B2 R2 B' R' D2 L' D U R' U' F' D2"
+SCRAMBLE = "D' B' D2 F U2 F D2 U2 F D2 B' R2 U' L B U2 R' U' F' L2 B"
 #SCRAMBLE = "M2 U M2 U2 M2 U M2"
 PRINT_LETTERS = True
 
