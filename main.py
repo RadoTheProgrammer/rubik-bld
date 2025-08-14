@@ -6,7 +6,7 @@ M_DO    = 0
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "U' D R U' R' B D L' U F2 L F2 R' B2 L B2 L2 F2 U2 L"
+SCRAMBLE = "F2 U2 R' U2 B2 D2 B2 L D2 R' B2 R B' D L' D L2 U F' L F'"
 #SCRAMBLE = "M2 U M2 U2 M2 U M2"
 PRINT_LETTERS = True
 
@@ -370,7 +370,7 @@ def do_letter(letter,isFoC):
     dfd["DoTime"].append(doTime)
 
 def memorize_letter(letter):
-    if letter in (END_LETTER,PARITY_LETTER):
+    if letter==PARITY_LETTER:
         dfd["MemoTime"].append(0)
         dfd["MemoHint"].append("")
     else:
