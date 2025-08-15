@@ -1,4 +1,4 @@
-MODE="MEMO"
+MODE="DO"
 
 import rrstats
 
