@@ -6,7 +6,7 @@ M_DO    = 0
 T_EDGES = True
 T_CORNERS = True
 
-SCRAMBLE = "F2 U2 R' U2 B2 D2 B2 L D2 R' B2 R B' D L' D L2 U F' L F'"
+SCRAMBLE_ALG = ""
 #SCRAMBLE = "M2 U M2 U2 M2 U M2"
 PRINT_LETTERS = True
 
@@ -122,9 +122,15 @@ def tsort(colors: tuple[int, ...]) -> tuple[int, ...]:
 
 import rubik_impl
 cube = rubik_impl.Cube.solved(rubik_impl.C_NUMBERS)
-cube.apply(SCRAMBLE)
-print(cube)
+if SCRAMBLE_ALG:
+    scramble_alg = SCRAMBLE_ALG
+    cube.apply(scramble_alg)
+else:
+    scramble_alg = cube.scramble()
 
+print(scramble_alg)
+print(cube)
+input("Apply the scramble")
 def string_to_csv(s):
     output = io.StringIO()
     writer = csv.writer(output, quoting=csv.QUOTE_ALL)
@@ -453,7 +459,7 @@ if not os.path.exists(FILE_DATA_ALL) or RESET_DATA:
         f.write("Datetime,Scramble,TotalTime,PlanMistake,MemoMistake,DoMistake,PlanTime,MemoTime,MemoRecallTime,DoTime,MemoEndTime,EdgesLetters,CornersLetters,Comment")
 
 with open(FILE_DATA_ALL,"a") as f:
-    f.write(f"\n{ts},{SCRAMBLE},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime},{memoEndTime},{edges_letters},{corners_letters}")
+    f.write(f"\n{ts},{scramble_alg},{totalTime},{planMistake},{memoMistake},{doMistake},{planTime},{memoTime},{memoRecallTime},{doTime},{memoEndTime},{edges_letters},{corners_letters}")
 
 comment = input("Comment/Story ?")
 with open(FILE_DATA_ALL,"a",encoding="utf8") as f:
