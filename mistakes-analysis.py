@@ -1,4 +1,4 @@
-MODE="DO"
+MODE="PLAN"
 
 import rrstats
 
