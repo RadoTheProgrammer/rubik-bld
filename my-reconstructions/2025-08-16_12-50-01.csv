@@ -1,0 +1,25 @@
+Letter,IsFoC,MemoMistake,MemoTime,MemoRecallTime,MemoHint
+J,False,,1.04,5.768,
+O,False,,13.649,0.624,jeux olympiques
+A,False,,0.423,1.512,
+E,False,,31.281,0.383,aie
+H,False,,0.48,2.904,
+X,False,,73.618,0.416,hex
+U,False,,0.6,4.208,
+S,True,,18.601,0.464,united states
+W,False,F,0.448,6.32,
+N,True,,10.368,2.176,très difficile de win
+I,False,F,0.432,0.568,
+N,False,,96.562,3.344,intérieur
+F,True,,0.456,0.688,
+L,False,,11.676,0.504,fall
+END,False,,0.941,0.648,
+H,True,,0.664,1.944,
+O,False,,6.104,0.416,ho ho ho
+B,False,,0.44,2.657,
+I,False,,18.624,0.44,bienvenue ! (die le père noel)
+S,False,,0.368,0.52,
+G,True,,11.296,0.376,sénégalais
+J,False,,0.472,0.768,
+L,False,,9.296,0.368,Joéline
+END,False,,0.576,0.624,

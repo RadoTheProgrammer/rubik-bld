@@ -1,0 +1,24 @@
+Letter,IsFoC,MemoMistake,MemoTime,MemoRecallTime,MemoHint
+J,False,,1.016,2.536,
+U,False,,10.593,0.649,jus
+L,False,,0.48,4.904,
+H,False,,22.257,0.832,lache
+S,True,,0.425,4.992,
+I,False,,28.559,0.64,système international
+O,False,,0.472,6.256,
+T,False,,26.257,0.528,hôte
+A,False,K,0.44,10.72,
+E,False,,9.193,1.72,aie
+S,False,K,0.464,1.432,
+END,False,,31.283,4.16,succès
+PARITY,False,O,0.0,5.472,
+O,False,,0.526,2.208,
+H,False,,12.778,0.856,ohhh
+K,True,,0.478,1.376,
+C,False,,8.856,0.488,cassé (le système)
+P,False,,0.601,21.713,
+G,True,,18.175,0.504,pegasus
+Q,False,,0.472,1.497,
+D,False,,27.641,0.36,quand ?
+U,False,,0.448,0.736,
+END,False,,19.001,0.648,
