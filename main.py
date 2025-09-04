@@ -1,7 +1,7 @@
 
 M_PLAN  = 1
-M_MEMO  = 0
-M_DO    = 0
+M_MEMO  = 1
+M_DO    = 1
 
 T_EDGES = True
 T_CORNERS = True

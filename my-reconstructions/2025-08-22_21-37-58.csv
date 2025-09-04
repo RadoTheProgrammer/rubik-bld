@@ -1,0 +1,26 @@
+Letter,IsFoC,MemoMistake,MemoTime,MemoRecallTime,MemoHint
+E,False,,0.624,26.32,
+S,True,,44.665,0.497,a l'est
+H,False,,0.48,11.488,
+Q,False,,24.905,0.576,"hein quoi, tu veux faire quoi à l'est ?"
+G,False,,0.455,29.105,
+I,False,,20.104,0.975,bah et si on allait au giron ?
+T,False,,0.544,6.696,
+F,False,,20.801,0.496,"tf bro, pk il va à l'est pour voir le giron celui-là ..."
+O,False,,0.552,5.184,
+S,False,,59.217,0.888,mais enfin parce qu'il y a le système d'exploitation parfait là-bas !
+K,True,,1.0,4.927,
+P,False,,31.305,0.656,oui ... c surtout bourré de kapla
+U,False,,0.568,2.609,
+END,False,,35.96,0.775,U ! c ta faute si c bourré de kapla !
+PARITY,False,,0.0,1.088,
+H,True,,0.656,8.089,
+X,False,,29.841,0.479,format hex
+O,True,,0.439,3.224,
+U,False,,23.137,0.848,ou ca où est-ce que t'as trouvé ça ?? (ref au stage à l'EPFL)
+Q,False,,0.544,1.825,
+M,False,,11.361,0.527,qui ... moi ??
+O,False,,0.569,4.84,
+D,True,,53.969,0.465,bah frr j'ai juste chanté une ode et d'un coup c apparu
+F,False,,0.48,1.895,
+END,False,,31.425,0.817,ah mais oui ca doit être le F (le fantôme)
